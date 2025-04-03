@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Protect Path - Login</title>
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #0057A7, #87CEEB);
+      margin: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      color: #fff;
+      overflow: hidden;
+    }
+
+    .container {
+      background: rgba(255, 255, 255, 0.2);
+      padding: 40px 30px;
+      border-radius: 15px;
+      box-shadow: 0 0 20px rgba(255, 255, 255, 0.5), 0 0 30px rgba(255, 255, 255, 0.4);
+      max-width: 500px;
+      text-align: center;
+    }
+
+    h1 {
+      font-size: 28px;
+      font-weight: bold;
+      margin-bottom: 15px;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+      text-align: left;
+    }
+
+    .form-group input {
+      width: 100%;
+      padding: 12px;
+      font-size: 14px;
+      border-radius: 8px;
+      border: 2px solid transparent;
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
+      box-shadow: 0 0 10px rgba(255, 255, 255, 0.4);
+      transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .form-group input:focus {
+      border-color: #ffffff;
+      box-shadow: 0 0 15px rgba(255, 255, 255, 0.6);
+      outline: none;
+    }
+
+    .button {
+      padding: 12px 20px;
+      font-size: 16px;
+      font-weight: bold;
+      border: none;
+      border-radius: 8px;
+      background: linear-gradient(to right, #0057A7, #87CEEB);
+      color: #fff;
+      text-decoration: none;
+      box-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 0 20px rgba(255, 255, 255, 1);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Protect Path - Login</h1>
+    <form id="loginForm" autocomplete="off">
+      <div class="form-group">
+        <label for="username">Username</label>
+        <input type="text" id="username" name="username" placeholder="Enter your username" required>
+      </div>
+      <div class="form-group">
+        <label for="phone">Phone Number</label>
+        <input type="tel" id="phone" name="phone" placeholder="Enter your phone number" pattern="[0-9]{10}" title="Enter a valid 10-digit phone number" required>
+      </div>
+      <button type="button" id="sendOtpBtn" class="button">Send OTP</button>
+      <div class="form-group">
+        <label for="otp">OTP</label>
+        <input type="text" id="otp" name="otp" placeholder="Enter the OTP" required>
+      </div>
+      <button type="submit" class="button">Register</button>
+    </form>
+    <div id="otpInfo"></div>
+  </div>
+
+  <script>
+    let dummyOtp = null;
+
+    // OTP Generation
+    document.getElementById("sendOtpBtn").addEventListener("click", function () {
+      const phone = document.getElementById("phone").value;
+      if (!phone.match(/^\d{10}$/)) {
+        alert("Please enter a valid 10-digit phone number.");
+        return;
+      }
+
+      dummyOtp = Math.floor(1000 + Math.random() * 9000).toString();
+      alert(`Your OTP is: ${dummyOtp}`);
+      document.getElementById("otpInfo").textContent = "OTP has been sent to your phone number.";
+    });
+
+    // Form Submission
+    document.getElementById("loginForm").addEventListener("submit", function (e) {
+      e.preventDefault();
+
+      const username = document.getElementById("username").value;
+      const phone = document.getElementById("phone").value;
+      const otp = document.getElementById("otp").value;
+
+      if (otp === dummyOtp) {
+        // Save user data to localStorage
+        localStorage.setItem("userName", username);
+        localStorage.setItem("userPhone", phone);
+
+        alert("Login successful! Redirecting to the main page...");
+        window.location.href = "home.html"; // Redirect to main.html
+      } else {
+        alert("Invalid OTP. Please try again.");
+      }
+    });
+  </script>
+</body>
+</html>

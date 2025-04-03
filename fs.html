@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ProtectPath - Emergency Alert</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+
+    body {
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #0057A7, #87CEEB);
+      transition: background-color 0.5s ease-in-out;
+    }
+
+    .container {
+      text-align: center;
+      background: rgba(255, 255, 255, 0.2);
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
+      backdrop-filter: blur(10px);
+      animation: fadeIn 1s ease-in-out;
+    }
+
+    h1 {
+      color: white;
+      font-size: 24px;
+      margin-bottom: 20px;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .alert-button {
+      padding: 15px 40px;
+      font-size: 18px;
+      font-weight: bold;
+      border: none;
+      border-radius: 50px;
+      background: linear-gradient(to right, #ff2d55, #ff5e8a);
+      color: white;
+      cursor: pointer;
+      box-shadow: 0 0 20px rgba(255, 0, 100, 0.7);
+      animation: pulse 1.5s infinite;
+      transition: all 0.3s ease-in-out;
+    }
+
+    .alert-button:hover {
+      background: linear-gradient(to right, #ff5e8a, #ff2d55);
+      transform: scale(1.1);
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(1); box-shadow: 0 0 15px rgba(255, 0, 100, 0.7); }
+      50% { transform: scale(1.1); box-shadow: 0 0 25px rgba(255, 0, 100, 1); }
+      100% { transform: scale(1); box-shadow: 0 0 15px rgba(255, 0, 100, 0.7); }
+    }
+
+    /* Flash effect when alert is active */
+    @keyframes flash {
+      0%, 100% { background: white; }
+      50% { background: red; }
+    }
+
+    .alert-active {
+      animation: flash 0.5s infinite;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🔴 Emergency Alert System 🔴</h1>
+    <button id="alertButton" class="alert-button">Trigger Emergency Alert</button>
+  </div>
+
+  <!-- Police Siren Sound -->
+  <audio id="sirenSound" src="https://www.fesliyanstudios.com/play-mp3/4385" preload="auto"></audio>
+
+  <script>
+    const alertButton = document.getElementById('alertButton');
+    const sirenSound = document.getElementById('sirenSound');
+    let isAlertActive = false;
+
+    alertButton.addEventListener('click', () => {
+      if (!isAlertActive) {
+        document.body.classList.add('alert-active'); // Flashing red background
+        sirenSound.loop = true; // Loop siren sound
+        sirenSound.play(); // Play siren
+        alertButton.textContent = 'Stop Alert';
+        isAlertActive = true;
+      } else {
+        document.body.classList.remove('alert-active'); // Restore background
+        sirenSound.pause(); // Stop siren
+        sirenSound.currentTime = 0; // Reset audio
+        alertButton.textContent = 'Trigger Emergency Alert';
+        isAlertActive = false;
+      }
+    });
+  </script>
+</body>
+</html>

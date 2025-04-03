@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ProtectPath</title>
+    <style>
+        /* General Page Styles */
+        body {
+            font-family: Georgia, 'Times New Roman', Times, serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #0057A7, #87CEEB);
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Container */
+        .container {
+            text-align: center;
+            padding: 20px;
+        }
+
+        /* Title */
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 30px;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+        }
+
+        /* Button Grid */
+        .button-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        /* Buttons */
+        .button {
+            padding: 15px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            text-align: center;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.6);
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            animation: float 2s infinite ease-in-out alternate;
+        }
+
+        /* Smooth Floating Effect */
+        @keyframes float {
+            from {
+                transform: translateY(0);
+            }
+            to {
+                transform: translateY(-5px);
+            }
+        }
+
+        /* Button Glow Effect */
+        .button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.9);
+        }
+
+        /* Floating SOS Button */
+        #sendLocationBtn {
+            background: linear-gradient(45deg, #ff0000, #ff7300);
+            font-size: 1.5rem;
+            font-weight: bold;
+            padding: 15px 30px;
+            border-radius: 50px;
+            color: white;
+            text-transform: uppercase;
+            border: none;
+            box-shadow: 0 0 15px rgba(255, 0, 0, 0.7);
+            cursor: pointer;
+            animation: pulse 1.5s infinite, float 2s infinite ease-in-out alternate;
+            margin-top: 20px;
+        }
+
+        /* SOS Button Glow Animation */
+        @keyframes pulse {
+            0% { box-shadow: 0 0 15px rgba(255, 0, 0, 0.7); }
+            50% { box-shadow: 0 0 30px rgba(255, 0, 0, 1); }
+            100% { box-shadow: 0 0 15px rgba(255, 0, 0, 0.7); }
+        }
+
+        #sendLocationBtn:hover {
+            transform: scale(1.1);
+            background: linear-gradient(45deg, #ff7300, #ff0000);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>ProtectPath</h1>
+
+        <div class="button-container">
+            <button class="button" onclick="window.location.href='location.html';">📍 Track me</button>
+            <button class="button" onclick="window.location.href='panic.html';">🚨 Panic</button>
+            <button class="button" onclick="window.location.href='travel.html';">🗺️ Travel</button>
+            <button class="button" onclick="window.location.href='savesecure.html';">🔒 Save & Secure</button>
+            <button class="button" onclick="window.location.href='friends.html';">👥 Friends</button>
+            <button class="button" onclick="window.location.href='fs.html';">🕵️ Flash & Siren</button>
+            <button class="button" onclick="window.location.href='about.html';">ℹ️ About</button>
+            <button class="button" onclick="window.location.href='help.html';">🆘 Help</button>
+            <button class="button" onclick="window.open('https://forms.gle/cSfHE3NiGfRfYbTU9', '_blank');">💬 Feedback</button>
+            <button class="button" onclick="window.location.href='index.html';">🚪 Logout</button>
+        </div>
+
+        <!-- Floating SOS Button -->
+        <button id="sendLocationBtn" onclick="sendLiveLocation()">🚨 SOS</button>
+    </div>
+
+    <script>
+        function sendLiveLocation() {
+            const contactData = JSON.parse(localStorage.getItem("trustedContacts"));
+
+            if (!contactData || !contactData.relatives || contactData.relatives.length === 0) {
+                alert("❌ No trusted contact found. Please add at least one trusted contact!");
+                return;
+            }
+
+            // Get first trusted contact
+            const trustedNumber = contactData.relatives[0].phone.replace(/\D/g, "");
+
+            if ("geolocation" in navigator) {
+                navigator.geolocation.getCurrentPosition(
+                    function(position) {
+                        let lat = position.coords.latitude;
+                        let lon = position.coords.longitude;
+
+                        // Create Google Maps Link
+                        let liveTrackingUrl = `https://www.google.com/maps?q=${lat},${lon}`;
+
+                        let message = `🚨 *ProtectPath Alert!* 🚨  
+📍 *Emergency Location*: ${liveTrackingUrl}  
+⚠️ This user may need assistance!`;
+
+                        let whatsappUrl = `https://api.whatsapp.com/send?phone=${trustedNumber}&text=${encodeURIComponent(message)}`;
+                        window.open(whatsappUrl, "_blank");
+                    },
+                    function(error) {
+                        alert("❌ Location access denied. Please enable GPS!");
+                    }
+                );
+            } else {
+                alert("❌ Geolocation is not supported by your browser.");
+            }
+        }
+
+        // Shake Detection - Fixed Version
+        let lastTime = 0;
+        let lastX = 0, lastY = 0, lastZ = 0;
+        let shakeThreshold = 15; // Adjust sensitivity
+
+        window.addEventListener("devicemotion", function(event) {
+            let currentTime = new Date().getTime();
+            if ((currentTime - lastTime) > 100) {  // Limit updates to avoid over-triggering
+                let acceleration = event.accelerationIncludingGravity;
+                
+                let deltaX = Math.abs(acceleration.x - lastX);
+                let deltaY = Math.abs(acceleration.y - lastY);
+                let deltaZ = Math.abs(acceleration.z - lastZ);
+
+                if ((deltaX > shakeThreshold && deltaY > shakeThreshold) || 
+                    (deltaX > shakeThreshold && deltaZ > shakeThreshold) || 
+                    (deltaY > shakeThreshold && deltaZ > shakeThreshold)) {
+                    alert("🚨 Shake Detected! Sending SOS...");
+                    sendLiveLocation();
+                }
+
+                lastX = acceleration.x;
+                lastY = acceleration.y;
+                lastZ = acceleration.z;
+                lastTime = currentTime;
+            }
+        }, true);
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ProtectPath - Shake-to-Panic</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: linear-gradient(135deg, #0057A7, #87CEEB);
+        }
+        
+        .container {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(10px);
+            text-align: center;
+            animation: fadeIn 1s ease-in-out;
+        }
+        
+        .button {
+            display: block;
+            width: 220px;
+            padding: 15px;
+            font-size: 18px;
+            font-weight: bold;
+            border: none;
+            border-radius: 50px;
+            background: linear-gradient(to right, #ff2d55, #ff5e8a);
+            color: white;
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(255, 0, 100, 0.7);
+            transition: all 0.3s ease-in-out;
+        }
+        
+        .button:hover {
+            background: linear-gradient(to right, #ff5e8a, #ff2d55);
+            transform: scale(1.1);
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: translate(0, 0); }
+            10%, 30%, 50%, 70%, 90% { transform: translate(-10px, 0); }
+            20%, 40%, 60%, 80% { transform: translate(10px, 0); }
+        }
+        
+        .shake {
+            animation: shake 2s ease-in-out;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>🚨 ProtectPath - Shake-to-Panic 🚨</h2>
+        <button id="panicButton" class="button">Activate Panic</button>
+    </div>
+
+    <script>
+        const panicButton = document.getElementById("panicButton");
+        let shakeThreshold = 15;
+        let lastTime = 0;
+        let lastX = null, lastY = null, lastZ = null;
+
+        function sendLocationToWhatsApp() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition((position) => {
+                    const latitude = position.coords.latitude;
+                    const longitude = position.coords.longitude;
+                    const whatsappMessage = `🚨🚨 ProtectPath Alert! 🚨  
+📍 Emergency Location URGENT! I need help. My live location: https://www.google.com/maps?q=${latitude},${longitude}`;
+                    
+                    const contactData = JSON.parse(localStorage.getItem("trustedContacts"));
+
+                    if (!contactData || !contactData.relatives || contactData.relatives.length === 0) {
+                        alert("❌ No trusted contact found. Please add at least one trusted contact!");
+                        return;
+                    }
+
+                    contactData.relatives.forEach(contact => {
+                        const phoneNumber = contact.phone.replace(/\D/g, "");
+                        const whatsappLink = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(whatsappMessage)}`;
+                        window.open(whatsappLink, "_blank");
+                    });
+                }, () => {
+                    alert("⚠️ Unable to access location. Please enable GPS.");
+                });
+            } else {
+                alert("⚠️ Geolocation is not supported by this browser.");
+            }
+        }
+
+        function triggerPanic() {
+            panicButton.classList.add("shake");
+            
+            const userConfirmed = confirm("🚨 Panic Activated! Do you want to send your live location?");
+            
+            if (userConfirmed) {
+                sendLocationToWhatsApp();
+            } else {
+                alert("❌ Panic Alert Canceled.");
+            }
+
+            setTimeout(() => panicButton.classList.remove("shake"), 1000);
+        }
+
+        panicButton.addEventListener("click", triggerPanic);
+
+        window.addEventListener("devicemotion", (event) => {
+            const { x, y, z } = event.accelerationIncludingGravity || {};
+            if (!x || !y || !z) return;
+
+            const currentTime = new Date().getTime();
+            if ((currentTime - lastTime) > 100) {
+                const deltaX = Math.abs(x - (lastX || 0));
+                const deltaY = Math.abs(y - (lastY || 0));
+                const deltaZ = Math.abs(z - (lastZ || 0));
+
+                if (deltaX > shakeThreshold || deltaY > shakeThreshold || deltaZ > shakeThreshold) {
+                    triggerPanic();
+                }
+
+                lastX = x;
+                lastY = y;
+                lastZ = z;
+                lastTime = currentTime;
+            }
+        });
+
+        window.addEventListener("load", () => {
+            if (typeof DeviceMotionEvent !== "undefined" && typeof DeviceMotionEvent.requestPermission === "function") {
+                DeviceMotionEvent.requestPermission()
+                    .then(permissionState => {
+                        if (permissionState !== "granted") {
+                            alert("Please enable motion access for shake detection.");
+                        }
+                    })
+                    .catch(console.error);
+            }
+        });
+    </script>
+</body>
+</html>

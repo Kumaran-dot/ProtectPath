@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Protect Path - Add Trusted Contacts</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+
+    body {
+      font-family:Georgia, 'Times New Roman', Times, serif;
+      background: linear-gradient(135deg, #0057A7, #87CEEB);
+      margin: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      color: #fff;
+      opacity: 0;
+      animation: fadeIn 1.5s ease-in forwards;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .container {
+      background: rgba(255, 255, 255, 0.2);
+      padding: 30px 20px;
+      border-radius: 15px;
+      box-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+      max-width: 450px;
+      text-align: center;
+      animation: slideUp 1s ease-in-out;
+    }
+
+    @keyframes slideUp {
+      from { transform: translateY(50px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    h1 {
+      font-size: 24px;
+      font-weight: bold;
+      margin-bottom: 15px;
+    }
+
+    .form-group {
+      margin-bottom: 12px;
+      text-align: left;
+      opacity: 0;
+    }
+
+    .form-group:nth-child(odd) {
+      transform: translateX(-100%);
+      animation: slideInLeft 1.8s ease-in-out forwards;
+    }
+
+    .form-group:nth-child(even) {
+      transform: translateX(100%);
+      animation: slideInRight 1.8s ease-in-out forwards;
+    }
+
+    .form-group:nth-child(1) { animation-delay: 0.2s; }
+    .form-group:nth-child(2) { animation-delay: 0.4s; }
+    .form-group:nth-child(3) { animation-delay: 0.6s; }
+    .form-group:nth-child(4) { animation-delay: 0.8s; }
+    .form-group:nth-child(5) { animation-delay: 1.0s; }
+    .form-group:nth-child(6) { animation-delay: 1.2s; }
+
+
+    @keyframes slideInLeft {
+      from { transform: translateX(-100%); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+
+    @keyframes slideInRight {
+      from { transform: translateX(100%); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+
+    .form-group input {
+      width: 100%;
+      padding: 10px;
+      font-size: 14px;
+      border-radius: 6px;
+      border: 2px solid transparent;
+      background: rgba(255, 255, 255, 0.9);
+      color: black;
+      font-weight: bold;
+      box-shadow: 0 0 8px rgba(255, 255, 255, 0.3);
+      transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .form-group input:focus {
+      border-color: #ffffff;
+      box-shadow: 0 0 12px rgba(255, 255, 255, 0.5);
+      outline: none;
+    }
+
+    .button {
+      padding: 12px 18px;
+      font-size: 14px;
+      font-weight: bold;
+      border: none;
+      border-radius: 6px;
+      background: linear-gradient(to right, #0057A7, #87CEEB);
+      color: #fff;
+      cursor: pointer;
+      box-shadow: 0 0 8px rgba(255, 255, 255, 0.7);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      opacity: 0;
+      transform: scale(0.9);
+      animation: fadeInButton 2s ease-in-out forwards 2.5s;
+    }
+
+    .button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 0 15px rgba(255, 255, 255, 0.9);
+    }
+
+    @keyframes fadeInButton {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h1>Protect Path</h1>
+    <h1>Add Trusted Contacts</h1>
+    <form id="trustedContactsForm" autocomplete="off">
+      <div class="form-group">
+        <label for="userName">Your Name:</label>
+        <input type="text" id="userName" placeholder="Enter your name" required>
+      </div>
+
+      <div class="form-group">
+        <label for="userPhone">Your Phone Number:</label>
+        <input type="tel" id="userPhone" placeholder="Enter your phone number" required>
+      </div>
+
+      <div class="form-group">
+        <label for="relative1">Relative 1:</label>
+        <input type="text" id="relative1" placeholder="Relative 1 Name" required>
+        <input type="tel" id="relative1Phone" placeholder="Relative 1 Phone Number" required>
+      </div>
+
+      <div class="form-group">
+        <label for="relative2">Relative 2:</label>
+        <input type="text" id="relative2" placeholder="Relative 2 Name" required>
+        <input type="tel" id="relative2Phone" placeholder="Relative 2 Phone Number" required>
+      </div>
+
+      <div class="form-group">
+        <label for="relative3">Relative 3:</label>
+        <input type="text" id="relative3" placeholder="Relative 3 Name" required>
+        <input type="tel" id="relative3Phone" placeholder="Relative 3 Phone Number" required>
+      </div>
+
+      <button type="submit" class="button">Save Contacts</button>
+    </form>
+  </div>
+  
+  <script>
+    document.getElementById("trustedContactsForm").addEventListener("submit", function (event) {
+      event.preventDefault();
+  
+      const userName = document.getElementById("userName").value.trim();
+      const userPhone = document.getElementById("userPhone").value.trim();
+      const relatives = [];
+  
+      for (let i = 1; i <= 3; i++) {
+        const name = document.getElementById(`relative${i}`).value.trim();
+        const phone = document.getElementById(`relative${i}Phone`).value.trim();
+        if (name && phone) {
+          relatives.push({ name, phone });
+        }
+      }
+  
+      const contactDetails = { userName, userPhone, relatives };
+      
+      localStorage.setItem("trustedContacts", JSON.stringify(contactDetails));
+  
+      alert("Contacts saved successfully!");
+      window.location.href = "friends.html"; 
+    });
+  </script>
+
+</body>
+</html>

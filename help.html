@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ProtectPath - Travel Helpline</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: linear-gradient(135deg, #0057A7, #87CEEB);
+            animation: fadeIn 1s ease-in-out;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(10px);
+            text-align: center;
+            width: 90%;
+            max-width: 400px;
+            animation: slideUp 0.8s ease-in-out;
+        }
+
+        h2 {
+            color: white;
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+
+        .helpline {
+            font-size: 18px;
+            margin: 15px 0;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.3);
+            color: black;
+            font-weight: bold;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+            transition: transform 0.3s ease-in-out;
+            opacity: 0;
+            position: relative;
+        }
+
+        .helpline:hover {
+            transform: scale(1.05);
+            background: rgba(255, 255, 255, 0.4);
+        }
+
+        .helpline:nth-child(odd) {
+            transform: translateX(-100%);
+            animation: slideInLeft 1s ease-in-out forwards;
+        }
+
+        .helpline:nth-child(even) {
+            transform: translateX(100%);
+            animation: slideInRight 1s ease-in-out forwards;
+        }
+
+        .helpline:nth-child(2) { animation-delay: 0.3s; }
+        .helpline:nth-child(3) { animation-delay: 0.6s; }
+        .helpline:nth-child(4) { animation-delay: 0.9s; }
+        .helpline:nth-child(5) { animation-delay: 1.2s; }
+
+        .call-button {
+            display: block;
+            margin: 10px auto 0;
+            padding: 10px 15px;
+            font-size: 16px;
+            font-weight: bold;
+            border: none;
+            border-radius: 8px;
+            background: linear-gradient(to right, #D32F2F, #FF5252);
+            color: white;
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            opacity: 0;
+            transform: scale(0.9);
+            animation: fadeInButton 1s ease-in-out forwards 1.5s;
+            text-decoration: none;
+        }
+
+        .call-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 0 15px rgba(255, 0, 0, 0.8);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(30px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        @keyframes slideInLeft {
+            from { transform: translateX(-100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        @keyframes slideInRight {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        @keyframes fadeInButton {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>🚨 ProtectPath - Travel Helpline Numbers</h2>
+        
+        <div class="helpline">
+            🚆 <strong>Railway Helpline:</strong> <span>139</span>
+            <a href="tel:139" class="call-button">⚠️ Call Now</a>
+        </div>
+
+        <div class="helpline">
+            🌍 <strong>Tourist Helpline:</strong> <span>1363</span>
+            <a href="tel:1363" class="call-button">⚠️ Call Now</a>
+        </div>
+
+        <div class="helpline">
+            🛣️ <strong>Highway Emergency:</strong> <span>1033</span>
+            <a href="tel:1033" class="call-button">⚠️ Call Now</a>
+        </div>
+
+        <div class="helpline">
+            🚌 <strong>Bus Services:</strong> <span>1800-123-456</span>
+            <a href="tel:1800123456" class="call-button">⚠️ Call Now</a>
+        </div>
+
+        <div class="helpline">
+            ✈️ <strong>Airport Enquiry:</strong> <span>+91-9876543210</span>
+            <a href="tel:+919876543210" class="call-button">⚠️ Call Now</a>
+        </div>
+
+    </div>
+</body>
+</html>

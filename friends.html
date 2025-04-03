@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Trusted Contacts</title>
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #0057A7, #87CEEB);
+      margin: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      color: #fff;
+      text-align: center;
+    }
+    
+    .container {
+      background: rgba(255, 255, 255, 0.2);
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
+      width: 80%;
+      max-width: 500px;
+    }
+
+    h1 {
+      font-size: 24px;
+    }
+
+    .contact-box {
+      background: rgba(255, 255, 255, 0.9);
+      color: black;
+      padding: 15px;
+      border-radius: 10px;
+      margin-top: 15px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h1>Trusted Contacts</h1>
+    <div id="contactsList"></div>
+  </div>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const contactData = JSON.parse(localStorage.getItem("trustedContacts"));
+
+      if (!contactData) {
+        document.getElementById("contactsList").innerHTML = "<p>No contacts saved.</p>";
+        return;
+      }
+
+      let contactHTML = `<div class="contact-box">
+        <p><strong>Name:</strong> ${contactData.userName}</p>
+        <p><strong>Phone:</strong> ${contactData.userPhone}</p>
+        <h3>Relatives:</h3>`;
+
+      contactData.relatives.forEach(relative => {
+        contactHTML += `<p>${relative.name} - ${relative.phone}</p>`;
+      });
+
+      contactHTML += `</div>`;
+
+      document.getElementById("contactsList").innerHTML = contactHTML;
+    });
+  </script>
+
+</body>
+</html>

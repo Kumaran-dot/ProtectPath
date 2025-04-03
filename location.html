@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Track Me - EmpowerHer</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+
+        body {
+            font-family: Georgia, 'Times New Roman', Times, serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #0057A7, #87CEEB);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            color: #fff;
+            animation: fadeIn 1s ease-in-out;
+            overflow: hidden;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.2);
+            box-shadow: 0px 4px 10px rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            max-width: 450px;
+            font-size: 20px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 450px;
+            flex-grow: 1;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .map-container {
+            flex-grow: 1;
+            border-radius: 15px;
+            overflow: hidden;
+            background: rgba(255, 255, 255, 0.3);
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(10px);
+            animation: slideUp 1s ease-in-out;
+            height: 65vh;
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(30px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .bottom-menu {
+            display: flex;
+            justify-content: space-around;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 12px 0;
+            position: fixed;
+            bottom: 10px;
+            width: 90%;
+            max-width: 450px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
+            animation: fadeIn 1.5s ease-in-out;
+        }
+
+        .menu-btn {
+            background: linear-gradient(to right, #ff5e8a, #ff2d55);
+            color: white;
+            border-radius: 50%;
+            padding: 18px;
+            box-shadow: 0 0 15px rgba(255, 0, 100, 0.7);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: bold;
+            text-decoration: none;
+            width: 60px;
+            height: 60px;
+            text-align: center;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); box-shadow: 0 0 15px rgba(255, 0, 100, 0.7); }
+            50% { transform: scale(1.1); box-shadow: 0 0 25px rgba(255, 0, 100, 1); }
+            100% { transform: scale(1); box-shadow: 0 0 15px rgba(255, 0, 100, 0.7); }
+        }
+    </style>
+</head>
+<body onload="showLocation()">
+    <div class="header">Protect Path</div>
+    <div class="container">
+        <div class="map-container">
+            <iframe id="mapFrame" src="" width="100%" height="100%" frameborder="0"></iframe>
+        </div>
+    </div>
+    <div class="bottom-menu">
+        <a href="#" class="menu-btn" id="trackButton"><i class="fa fa-map-marker-alt"></i><br>Track Me</a>
+        <a href="#" class="menu-btn" id="callButton"><i class="fa fa-phone"></i><br>Call</a>
+    </div>
+
+    <script>
+        function showLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(function (position) {
+                    let lat = position.coords.latitude;
+                    let lon = position.coords.longitude;
+                    document.getElementById("mapFrame").src = `https://www.google.com/maps?q=${lat},${lon}&output=embed`;
+                });
+            } else {
+                alert("Geolocation is not supported by this browser.");
+            }
+        }
+
+        // Refresh location every 30 seconds
+        setInterval(showLocation, 30000);
+
+        document.addEventListener("DOMContentLoaded", function () {
+            const callBtn = document.getElementById("callButton");
+
+            // Retrieve friends list from localStorage
+            let friends = JSON.parse(localStorage.getItem("friends")) || [];
+
+            console.log("Stored Friends Data:", friends); // Debugging log
+
+            // Find the first relative's phone number
+            let firstRelativePhone = null;
+            if (friends.length > 0 && friends[0].relatives.length > 0) {
+                firstRelativePhone = friends[0].relatives[0].phone.trim(); // Ensure number is trimmed
+                console.log("Calling:", firstRelativePhone); // Debugging log
+            }
+
+            if (firstRelativePhone) {
+                // If a relative exists, call them
+                callBtn.href = `tel:${firstRelativePhone}`;
+                callBtn.addEventListener("click", function () {
+                    console.log(`Dialing ${firstRelativePhone}`); // Debugging log
+                });
+            } else {
+                // If no relative exists, show an alert when clicking
+                callBtn.addEventListener("click", function (event) {
+                    event.preventDefault();
+                    alert("No emergency contact found! Please add a relative first.");
+                });
+            }
+        });
+    </script>
+</body>
+</html>

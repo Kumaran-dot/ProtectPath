@@ -1,0 +1,173 @@
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ProtectPath - Live Journey Tracker</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #0057A7, #87CEEB);
+            color: white;
+        }
+        .container {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 20px;
+            border-radius: 10px;
+            display: inline-block;
+        }
+        button {
+            display: block;
+            width: 200px;
+            padding: 10px;
+            margin: 10px auto;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            background: #ff2d55;
+            color: white;
+            cursor: pointer;
+        }
+        a {
+            color: yellow;
+            font-weight: bold;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>🚳 ProtectPath - Live Journey Tracker</h2>
+        <button onclick="startJourney()">Start Journey</button>
+        <button onclick="endJourney()">End Journey</button>
+        <p id="trackingLink">🔗 Waiting for location...</p>
+    </div>
+
+    <script>
+        let watchID = null;
+        let phoneNumber = "+917603992827"; // Fixed recipient phone number
+
+        function startJourney() {
+            if (navigator.geolocation) {
+                watchID = navigator.geolocation.watchPosition(updateLocation, showError, { enableHighAccuracy: true });
+                alert("🚀 Journey Started! Sending live tracking link.");
+            } else {
+                alert("❌ Geolocation is not supported by this browser.");
+            }
+        }
+
+        function updateLocation(position) {
+            let lat = position.coords.latitude;
+            let lon = position.coords.longitude;
+            let liveTrackingUrl = `https://www.google.com/maps?q=${lat},${lon}`;
+
+            // Update the UI with the live tracking link
+            document.getElementById("trackingLink").innerHTML = 
+                `🔗 <a href="${liveTrackingUrl}" target="_blank">Live Tracking Link</a>`;
+
+            // Save latest location in localStorage
+            localStorage.setItem("latestLocation", liveTrackingUrl);
+
+            // Send WhatsApp message only once
+            if (!sessionStorage.getItem("linkSent")) {
+                sendWhatsApp(liveTrackingUrl);
+                sessionStorage.setItem("linkSent", "true");
+            }
+        }
+
+        function sendWhatsApp(link) {
+            let message = encodeURIComponent(`🔔 ProtectPath Live Tracking\n🚶‍♂ Live Location:\n📍 ${link}`);
+            let whatsappUrl = `https://api.whatsapp.com/send?phone=${phoneNumber}&text=${message}`;
+
+            // ✅ Fix: Open WhatsApp in a new tab (solves pop-up issues)
+            window.open(whatsappUrl, "_blank");
+        }
+
+        function endJourney() {
+            if (watchID !== null) {
+                navigator.geolocation.clearWatch(watchID);
+                watchID = null;
+                alert("🛑 Journey Ended! Tracking stopped.");
+            } else {
+                alert("No active tracking session.");
+            }
+            sessionStorage.removeItem("linkSent"); // Reset sending flag
+        }
+
+        function showError(error) {
+            alert("Error getting location: " + error.message);
+        }
+
+        // On page load, check if there is a stored location
+        window.onload = function() {
+            let savedLocation = localStorage.getItem("latestLocation");
+            if (savedLocation) {
+                document.getElementById("trackingLink").innerHTML = 
+                    `🔗 <a href="${savedLocation}" target="_blank">Live Tracking Link</a>`;
+            }
+        };
+    </script>
+
+</body>
+</html> -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ProtectPath - Live Journey Tracker</title>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #0057A7, #87CEEB);
+            color: white;
+        }
+        .container {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 20px;
+            border-radius: 10px;
+            display: inline-block;
+        }
+        button {
+            display: block;
+            width: 200px;
+            padding: 10px;
+            margin: 10px auto;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            background: #ff2d55;
+            color: white;
+            cursor: pointer;
+        }
+        a {
+            color: yellow;
+            font-weight: bold;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>🚳 ProtectPath - Live Journey Tracker</h2>
+        <button onclick="startJourney()">Start Journey</button>
+        <button onclick="sendWhatsApp()">Send WhatsApp</button>
+        <button onclick="endJourney()">End Journey</button>
+        <p id="trackingLink">🔗 Waiting for location...</p>
+    </div>
+
+    <!-- Include External JavaScript -->
+    <script src="tracker.js"></script>
+</body>
+</html>
