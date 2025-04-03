@@ -13,8 +13,9 @@ let db = firebase.database();
 
 let watchID = null;
 let journeyStarted = false;
+let phoneNumber = "7603992827";
 
-// Start journey tracking
+// 🟢 Start Live Tracking
 function startJourney() {
     if (navigator.geolocation) {
         watchID = navigator.geolocation.watchPosition(updateLocation, showError, { enableHighAccuracy: true });
@@ -25,72 +26,74 @@ function startJourney() {
     }
 }
 
-// Update location in Firebase
+// 🔄 Update Firebase With Latest Location
 function updateLocation(position) {
     let lat = position.coords.latitude;
     let lon = position.coords.longitude;
-    let timestamp = new Date().getTime(); // Forces Firebase update
+
+    let now = new Date();
+    let formattedTimestamp = now.toISOString().replace("T", " ").substring(0, 19) + " UTC";
 
     let trackingUrl = `https://www.google.com/maps?q=${lat},${lon}`;
-    
+
     document.getElementById("trackingLink").innerHTML = 
         `🔗 <a href="${trackingUrl}" target="_blank">Live Tracking Link</a>`;
 
-    // ✅ Update Firebase with timestamp
-    db.ref("location").set({ latitude: lat, longitude: lon, timestamp: timestamp })
-    .then(() => console.log("🔥 Location updated in Firebase"))
+    // ✅ Update Firebase with real-time listener
+    db.ref("location").set({ 
+        latitude: lat, 
+        longitude: lon, 
+        timestamp: formattedTimestamp
+    })
+    .then(() => console.log("🔥 Location updated:", formattedTimestamp))
     .catch((error) => console.error("❌ Firebase update failed:", error));
-
-    // Send WhatsApp message only once per session
-    if (!sessionStorage.getItem("linkSent")) {
-        sendWhatsApp(trackingUrl);
-        sessionStorage.setItem("linkSent", "true");
-    }
 }
 
-// Send WhatsApp message with live location
-function sendWhatsApp(link) {
+// 🚀 Real-time Listener for Location Updates
+db.ref("location").on("value", (snapshot) => {
+    let data = snapshot.val();
+    if (data) {
+        let liveTrackingUrl = `https://www.google.com/maps?q=${data.latitude},${data.longitude}`;
+        document.getElementById("trackingLink").innerHTML = 
+            `🔗 <a href="${liveTrackingUrl}" target="_blank">Live Tracking Link</a>`;
+    }
+});
+
+// 📩 Send WhatsApp Message with Latest Location
+function sendWhatsApp() {
     if (!journeyStarted) {
         alert("⚠ Please start the journey first!");
         return;
     }
 
-    let message = encodeURIComponent(`🔔 ProtectPath Live Tracking\n🚶‍♂ Live Location:\n📍 ${link}`);
-    let whatsappUrl = `https://wa.me/7603992827?text=${message}`;
+    db.ref("location").once("value", (snapshot) => {
+        let data = snapshot.val();
+        if (data && data.latitude && data.longitude) {
+            let liveTrackingUrl = `https://www.google.com/maps?q=${data.latitude},${data.longitude}`;
+            let message = encodeURIComponent(`🔔 ProtectPath Live Tracking\n🚶‍♂ Live Location:\n📍 ${liveTrackingUrl}\n🕒 ${data.timestamp}`);
+            let whatsappUrl = `https://wa.me/${phoneNumber}?text=${message}`;
 
-    // Open WhatsApp with the updated link
-    window.open(whatsappUrl, "_blank");
+            window.open(whatsappUrl, "_blank");
+        } else {
+            alert("⚠ Location data not available! Try again.");
+        }
+    });
 }
 
-// Stop tracking & disable link
+// 🛑 Stop Tracking & Disable Link
 function endJourney() {
     if (watchID !== null) {
         navigator.geolocation.clearWatch(watchID);
         watchID = null;
         journeyStarted = false;
         alert("🛑 Journey Ended! Tracking stopped.");
-
-        // Remove tracking link
         document.getElementById("trackingLink").innerHTML = "🔗 Tracking disabled!";
     } else {
         alert("No active tracking session.");
     }
-    sessionStorage.removeItem("linkSent"); // Reset sending flag
 }
 
-// Handle geolocation errors
+// ⚠ Handle Geolocation Errors
 function showError(error) {
     alert("Error getting location: " + error.message);
 }
-
-// Load last location on page refresh
-window.onload = function() {
-    db.ref("location").once("value", (snapshot) => {
-        let data = snapshot.val();
-        if (data && data.latitude && data.longitude) {
-            let savedLocation = `https://www.google.com/maps?q=${data.latitude},${data.longitude}`;
-            document.getElementById("trackingLink").innerHTML = 
-                `🔗 <a href="${savedLocation}" target="_blank">Live Tracking Link</a>`;
-        }
-    });
-};
