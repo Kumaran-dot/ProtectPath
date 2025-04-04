@@ -82,6 +82,7 @@
       if (navigator.geolocation) {
         watchID = navigator.geolocation.watchPosition(updateLocation, showError, {
           enableHighAccuracy: true,
+          maximumAge: 0
         });
         journeyStarted = true;
         document.getElementById("sendBtn").style.display = "block";
@@ -94,14 +95,23 @@
     function updateLocation(position) {
       const lat = position.coords.latitude;
       const lon = position.coords.longitude;
+      const timestamp = new Date().toISOString();
       const url = `https://www.google.com/maps?q=${lat},${lon}`;
       
       // Update link in UI
       document.getElementById("trackingLink").innerHTML = 
         `🔗 <a href="${url}" target="_blank">Live Tracking Link</a>`;
 
-      // Update Firebase
-      db.ref("location").set({ latitude: lat, longitude: lon, timestamp: new Date().toISOString() });
+      // Store latest location in Firebase
+      db.ref("location").set({
+        latitude: lat,
+        longitude: lon,
+        timestamp: timestamp
+      }).then(() => {
+        console.log("🔥 Location updated successfully in Firebase!");
+      }).catch(error => {
+        console.error("❌ Error updating location:", error);
+      });
     }
 
     function sendWhatsApp() {
@@ -130,6 +140,14 @@
         journeyStarted = false;
         document.getElementById("sendBtn").style.display = "none";
         document.getElementById("trackingLink").innerHTML = "🔗 Tracking disabled!";
+        
+        // Remove location from Firebase
+        db.ref("location").remove().then(() => {
+          console.log("🛑 Journey Ended & Location Cleared in Firebase");
+        }).catch(error => {
+          console.error("❌ Error removing location:", error);
+        });
+
         alert("🛑 Journey Ended!");
       } else {
         alert("No active tracking session.");
