@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>ProtectPath - Live Tracker</title>
 
-  <!-- Firebase SDK -->
+  <!-- Firebase SDKs -->
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
 
@@ -17,12 +17,14 @@
       text-align: center;
       padding: 20px;
     }
+
     .container {
       background: rgba(255, 255, 255, 0.2);
       padding: 20px;
       border-radius: 10px;
       display: inline-block;
     }
+
     button {
       display: block;
       width: 200px;
@@ -35,10 +37,12 @@
       color: white;
       cursor: pointer;
     }
+
     #sendBtn {
       background: green;
       display: none;
     }
+
     a {
       color: yellow;
       font-weight: bold;
@@ -48,7 +52,7 @@
 </head>
 <body>
   <div class="container">
-    <h2>📍 ProtectPath - Live Tracker</h2>
+    <h2>🚳 ProtectPath - Live Tracker</h2>
     <button onclick="startJourney()">Start Journey</button>
     <button onclick="endJourney()">End Journey</button>
     <button id="sendBtn" onclick="sendWhatsApp()">Send WhatsApp</button>
@@ -56,7 +60,7 @@
   </div>
 
   <script>
-    // ✅ Firebase Config
+    // Firebase Config
     const firebaseConfig = {
       apiKey: "AIzaSyAt0VhC7KVJ69LkK6xRtyxlXeS6AKXwBsk",
       authDomain: "protectpath-fb9d1.firebaseapp.com",
@@ -72,7 +76,7 @@
 
     let watchID = null;
     let journeyStarted = false;
-    const phoneNumber = "7603992827";
+    let phoneNumber = "7603992827";
 
     function startJourney() {
       if (navigator.geolocation) {
@@ -95,29 +99,29 @@
       const timestamp = new Date().toISOString();
       const url = `https://www.google.com/maps?q=${lat},${lon}`;
 
-      // 🔗 Update the live tracking link
+      // Update link in UI
       document.getElementById("trackingLink").innerHTML = 
         `🔗 <a href="${url}" target="_blank">Live Tracking Link</a>`;
 
-      // 🔥 Update Firebase
+      // Update Firebase
       db.ref("location").set({
         latitude: lat,
         longitude: lon,
         timestamp: timestamp
       }).then(() => {
-        console.log("✅ Location updated:", lat, lon);
-      }).catch(error => {
-        console.error("❌ Error:", error);
+        console.log("✅ Location updated in Firebase");
+      }).catch((error) => {
+        console.error("❌ Error updating location:", error);
       });
     }
 
     function sendWhatsApp() {
       if (!journeyStarted) {
-        alert("⚠️ Start the journey first!");
+        alert("⚠ Please start the journey first!");
         return;
       }
 
-      db.ref("location").once("value").then((snapshot) => {
+      db.ref("location").once("value", (snapshot) => {
         const data = snapshot.val();
         if (data) {
           const link = `https://www.google.com/maps?q=${data.latitude},${data.longitude}`;
@@ -125,7 +129,7 @@
           const waUrl = `https://wa.me/${phoneNumber}?text=${msg}`;
           window.open(waUrl, "_blank");
         } else {
-          alert("❌ No location data available yet.");
+          alert("⚠ Location not yet available.");
         }
       });
     }
@@ -137,17 +141,21 @@
         journeyStarted = false;
         document.getElementById("sendBtn").style.display = "none";
         document.getElementById("trackingLink").innerHTML = "🔗 Tracking disabled!";
+
         db.ref("location").remove().then(() => {
-          console.log("🛑 Location removed.");
+          console.log("🛑 Journey Ended & Location Removed");
+        }).catch((error) => {
+          console.error("❌ Error removing location:", error);
         });
+
         alert("🛑 Journey Ended!");
       } else {
-        alert("❌ No active journey.");
+        alert("No active tracking session.");
       }
     }
 
     function showError(error) {
-      alert("❌ Location Error: " + error.message);
+      alert("❗ Location Error: " + error.message);
     }
   </script>
 </body>
