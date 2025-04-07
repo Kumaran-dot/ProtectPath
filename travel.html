@@ -48,6 +48,12 @@
       font-weight: bold;
       text-decoration: none;
     }
+
+    .timestamp {
+      font-size: 14px;
+      margin-top: 10px;
+      color: #fffacd;
+    }
   </style>
 </head>
 <body>
@@ -57,6 +63,7 @@
     <button onclick="endJourney()">End Journey</button>
     <button id="sendBtn" onclick="sendWhatsApp()">Send WhatsApp</button>
     <p id="trackingLink">🔗 Waiting for location...</p>
+    <p id="time" class="timestamp"></p>
   </div>
 
   <script>
@@ -76,7 +83,7 @@
 
     let watchID = null;
     let journeyStarted = false;
-    let phoneNumber = "7603992827";
+    const phoneNumber = "9025752842";
 
     function startJourney() {
       if (navigator.geolocation) {
@@ -96,21 +103,22 @@
       const lat = position.coords.latitude;
       const lon = position.coords.longitude;
       const timestamp = new Date().toISOString();
-      const url = `https://www.google.com/maps?q=${lat},${lon}`;
-      
-      // Update link in UI
-      document.getElementById("trackingLink").innerHTML = 
-        `🔗 <a href="${url}" target="_blank">Live Tracking Link</a>`;
+      const mapLink = `https://www.google.com/maps?q=${lat},${lon}&t=${timestamp}`;
 
-      // Store latest location in Firebase
+      console.log(`📍 Updated location: ${lat}, ${lon} at ${timestamp}`);
+
+      document.getElementById("trackingLink").innerHTML = 
+        `🔗 <a href="${mapLink}" target="_blank">Live Tracking Link</a>`;
+      document.getElementById("time").textContent = `🕒 Updated at: ${timestamp}`;
+
       db.ref("location").set({
         latitude: lat,
         longitude: lon,
         timestamp: timestamp
       }).then(() => {
-        console.log("🔥 Location updated successfully in Firebase!");
+        console.log("✅ Location updated in Firebase");
       }).catch(error => {
-        console.error("❌ Error updating location:", error);
+        console.error("❌ Firebase update failed:", error);
       });
     }
 
@@ -140,12 +148,12 @@
         journeyStarted = false;
         document.getElementById("sendBtn").style.display = "none";
         document.getElementById("trackingLink").innerHTML = "🔗 Tracking disabled!";
-        
-        // Remove location from Firebase
+        document.getElementById("time").textContent = "";
+
         db.ref("location").remove().then(() => {
-          console.log("🛑 Journey Ended & Location Cleared in Firebase");
+          console.log("🛑 Location removed from Firebase");
         }).catch(error => {
-          console.error("❌ Error removing location:", error);
+          console.error("❌ Error clearing location:", error);
         });
 
         alert("🛑 Journey Ended!");
