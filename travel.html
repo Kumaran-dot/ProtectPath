@@ -4,8 +4,11 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>ProtectPath - Live Tracker</title>
+
+  <!-- Firebase SDKs -->
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -14,12 +17,14 @@
       text-align: center;
       padding: 20px;
     }
+
     .container {
       background: rgba(255, 255, 255, 0.2);
       padding: 20px;
       border-radius: 10px;
       display: inline-block;
     }
+
     button {
       display: block;
       width: 200px;
@@ -32,10 +37,12 @@
       color: white;
       cursor: pointer;
     }
+
     #sendBtn {
       background: green;
       display: none;
     }
+
     a {
       color: yellow;
       font-weight: bold;
@@ -53,6 +60,7 @@
   </div>
 
   <script>
+    // Firebase Config
     const firebaseConfig = {
       apiKey: "AIzaSyAt0VhC7KVJ69LkK6xRtyxlXeS6AKXwBsk",
       authDomain: "protectpath-fb9d1.firebaseapp.com",
@@ -80,8 +88,6 @@
         journeyStarted = true;
         document.getElementById("sendBtn").style.display = "block";
         alert("🚀 Journey Started!");
-        document.getElementById("trackingLink").innerHTML = 
-          `🔗 Share this link: <a href="https://yourusername.github.io/viewer.html" target="_blank">Live Location Viewer</a>`;
       } else {
         alert("❌ Geolocation not supported.");
       }
@@ -91,7 +97,13 @@
       const lat = position.coords.latitude;
       const lon = position.coords.longitude;
       const timestamp = new Date().toISOString();
+      const url = `https://www.google.com/maps?q=${lat},${lon}`;
 
+      // Update link in UI
+      document.getElementById("trackingLink").innerHTML = 
+        `🔗 <a href="${url}" target="_blank">Live Tracking Link</a>`;
+
+      // Update Firebase
       db.ref("location").set({
         latitude: lat,
         longitude: lon,
@@ -104,9 +116,22 @@
     }
 
     function sendWhatsApp() {
-      const msg = encodeURIComponent("🔔 ProtectPath Live Tracking:\n🌐 https://yourusername.github.io/viewer.html");
-      const waUrl = `https://wa.me/${phoneNumber}?text=${msg}`;
-      window.open(waUrl, "_blank");
+      if (!journeyStarted) {
+        alert("⚠ Please start the journey first!");
+        return;
+      }
+
+      db.ref("location").once("value", (snapshot) => {
+        const data = snapshot.val();
+        if (data) {
+          const link = `https://www.google.com/maps?q=${data.latitude},${data.longitude}`;
+          const msg = encodeURIComponent(`🔔 ProtectPath Live Tracking\n🚶‍♂ Live Location:\n📍 ${link}`);
+          const waUrl = `https://wa.me/${phoneNumber}?text=${msg}`;
+          window.open(waUrl, "_blank");
+        } else {
+          alert("⚠ Location not yet available.");
+        }
+      });
     }
 
     function endJourney() {
@@ -116,8 +141,16 @@
         journeyStarted = false;
         document.getElementById("sendBtn").style.display = "none";
         document.getElementById("trackingLink").innerHTML = "🔗 Tracking disabled!";
-        db.ref("location").remove();
+
+        db.ref("location").remove().then(() => {
+          console.log("🛑 Journey Ended & Location Removed");
+        }).catch((error) => {
+          console.error("❌ Error removing location:", error);
+        });
+
         alert("🛑 Journey Ended!");
+      } else {
+        alert("No active tracking session.");
       }
     }
 
