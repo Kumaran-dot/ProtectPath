@@ -5,54 +5,47 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>ProtectPath - Live Tracker</title>
 
-  <!-- Firebase SDKs -->
+  <!-- Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
 
   <style>
     body {
-      font-family: Arial, sans-serif;
-      background: linear-gradient(135deg, #0057A7, #87CEEB);
-      color: white;
+      font-family: Arial;
       text-align: center;
-      padding: 20px;
+      background: #0057A7;
+      color: white;
+      padding: 30px;
     }
-
     .container {
-      background: rgba(255, 255, 255, 0.2);
+      background: rgba(255,255,255,0.2);
       padding: 20px;
       border-radius: 10px;
       display: inline-block;
     }
-
     button {
-      display: block;
-      width: 200px;
-      padding: 10px;
-      margin: 10px auto;
+      padding: 10px 20px;
+      margin: 10px;
       font-size: 16px;
-      border: none;
-      border-radius: 5px;
       background: #ff2d55;
       color: white;
+      border: none;
+      border-radius: 5px;
       cursor: pointer;
     }
-
     #sendBtn {
       background: green;
       display: none;
     }
-
     a {
       color: yellow;
-      font-weight: bold;
       text-decoration: none;
     }
   </style>
 </head>
 <body>
   <div class="container">
-    <h2>🚳 ProtectPath - Live Tracker</h2>
+    <h2>🚀 ProtectPath - Tracker</h2>
     <button onclick="startJourney()">Start Journey</button>
     <button onclick="endJourney()">End Journey</button>
     <button id="sendBtn" onclick="sendWhatsApp()">Send WhatsApp</button>
@@ -60,7 +53,6 @@
   </div>
 
   <script>
-    // Firebase Config
     const firebaseConfig = {
       apiKey: "AIzaSyAt0VhC7KVJ69LkK6xRtyxlXeS6AKXwBsk",
       authDomain: "protectpath-fb9d1.firebaseapp.com",
@@ -73,7 +65,6 @@
 
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
-
     let watchID = null;
     let journeyStarted = false;
     let phoneNumber = "7603992827";
@@ -83,13 +74,13 @@
         watchID = navigator.geolocation.watchPosition(updateLocation, showError, {
           enableHighAccuracy: true,
           maximumAge: 0,
-          timeout: 5000
+          timeout: 10000
         });
         journeyStarted = true;
         document.getElementById("sendBtn").style.display = "block";
-        alert("🚀 Journey Started!");
+        alert("✅ Journey Started!");
       } else {
-        alert("❌ Geolocation not supported.");
+        alert("❌ Geolocation not supported");
       }
     }
 
@@ -98,38 +89,23 @@
       const lon = position.coords.longitude;
       const timestamp = new Date().toISOString();
       const url = `https://www.google.com/maps?q=${lat},${lon}`;
-
-      // Update link in UI
       document.getElementById("trackingLink").innerHTML = 
         `🔗 <a href="${url}" target="_blank">Live Tracking Link</a>`;
 
-      // Update Firebase
       db.ref("location").set({
         latitude: lat,
         longitude: lon,
         timestamp: timestamp
-      }).then(() => {
-        console.log("✅ Location updated in Firebase");
-      }).catch((error) => {
-        console.error("❌ Error updating location:", error);
       });
     }
 
     function sendWhatsApp() {
-      if (!journeyStarted) {
-        alert("⚠ Please start the journey first!");
-        return;
-      }
-
-      db.ref("location").once("value", (snapshot) => {
+      db.ref("location").once("value").then(snapshot => {
         const data = snapshot.val();
         if (data) {
           const link = `https://www.google.com/maps?q=${data.latitude},${data.longitude}`;
-          const msg = encodeURIComponent(`🔔 ProtectPath Live Tracking\n🚶‍♂ Live Location:\n📍 ${link}`);
-          const waUrl = `https://wa.me/${phoneNumber}?text=${msg}`;
-          window.open(waUrl, "_blank");
-        } else {
-          alert("⚠ Location not yet available.");
+          const msg = encodeURIComponent(`🚨 Live Tracking Link:\n${link}`);
+          window.open(`https://wa.me/${phoneNumber}?text=${msg}`, '_blank');
         }
       });
     }
@@ -137,25 +113,17 @@
     function endJourney() {
       if (watchID !== null) {
         navigator.geolocation.clearWatch(watchID);
+        db.ref("location").remove();
+        document.getElementById("sendBtn").style.display = "none";
+        document.getElementById("trackingLink").innerText = "🔗 Tracking disabled!";
+        alert("🛑 Journey Ended");
         watchID = null;
         journeyStarted = false;
-        document.getElementById("sendBtn").style.display = "none";
-        document.getElementById("trackingLink").innerHTML = "🔗 Tracking disabled!";
-
-        db.ref("location").remove().then(() => {
-          console.log("🛑 Journey Ended & Location Removed");
-        }).catch((error) => {
-          console.error("❌ Error removing location:", error);
-        });
-
-        alert("🛑 Journey Ended!");
-      } else {
-        alert("No active tracking session.");
       }
     }
 
     function showError(error) {
-      alert("❗ Location Error: " + error.message);
+      alert("Location Error: " + error.message);
     }
   </script>
 </body>
