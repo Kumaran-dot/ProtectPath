@@ -82,7 +82,7 @@ Works only while active = true in Firebase
 
 ▶️ How to Run
 1. Clone the Repository
-git clone https://github.com/your-username/ProtectPath.git
+git clone https://github.com/Kumaran-dot/ProtectPath
 
 2. Add your Firebase config
 
@@ -126,10 +126,11 @@ SOS audio/video upload
 
 Mobile app (Flutter / React Native)
 ![image alt](https://github.com/Kumaran-dot/ProtectPath/blob/main/Login%20Page.jpeg)
+
 ![image alt](https://github.com/Kumaran-dot/ProtectPath/blob/main/Home%20Page%20(2).jpeg)
+
 ![image alt](https://github.com/Kumaran-dot/ProtectPath/blob/main/About%20the%20App.jpeg)
-![image alt](https://github.com/Kumaran-dot/ProtectPath/blob/main/Travel%20page.jpeg)
-![image alt](https://github.com/Kumaran-dot/ProtectPath/blob/main/Adding%20Contact.jpeg)
+
 ![image alt](https://github.com/Kumaran-dot/ProtectPath/blob/main/Emergency%20contact.jpeg)
 
 
