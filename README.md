@@ -26,12 +26,14 @@ Auto-updating map without refresh
 Journey deactivation after End Journey
 
 📁 Project Structure
-ProtectPath/
-│
-├── tracker.html      # Sends location to Firebase
-├── viewer.html       # Displays live location updates
-├── README.md         # Project documentation
-└── assets/           # (Optional) CSS/JS files
+
+ProtectPath
+1.tracker.html – Sends live GPS updates to Firebase
+
+2.viewer.html – Displays real-time moving location on map
+
+3.README.md – Project documentation 
+
 
 🔧 Technologies Used
 
@@ -123,7 +125,12 @@ Data encryption
 SOS audio/video upload
 
 Mobile app (Flutter / React Native)
-![image alt]()
+![image alt](https://github.com/Kumaran-dot/ProtectPath/blob/main/Login%20Page.jpeg)
+![image alt](https://github.com/Kumaran-dot/ProtectPath/blob/main/Home%20Page%20(2).jpeg)
+![image alt](https://github.com/Kumaran-dot/ProtectPath/blob/main/About%20the%20App.jpeg)
+![image alt](https://github.com/Kumaran-dot/ProtectPath/blob/main/Travel%20page.jpeg)
+![image alt](https://github.com/Kumaran-dot/ProtectPath/blob/main/Adding%20Contact.jpeg)
+![image alt](https://github.com/Kumaran-dot/ProtectPath/blob/main/Emergency%20contact.jpeg)
 
 
 
