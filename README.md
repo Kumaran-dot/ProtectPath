@@ -125,4 +125,19 @@ SOS audio/video upload
 Mobile app (Flutter / React Native)
 ![image alt]()
 
+ProtectPath/
+│
+├── tracker.html          # Sends live GPS updates to Firebase
+├── viewer.html           # Displays real-time moving marker from Firebase
+├── README.md             # Complete project documentation
+│
+└── assets/               # (Optional) Extra resources
+    ├── logo.png          # Project logo
+    └── screenshots/      # Images for README
+        ├── tracker_start.png
+        ├── tracker_active.png
+        ├── viewer_live.png
+        └── firebase_data.png
+
+
 
